@@ -1,65 +1,96 @@
 import { createTheme } from '@mui/material/styles';
+import { 
+  COLORS, 
+  SHADOWS, 
+  SPACING_UNIT, 
+  BORDER_RADIUS, 
+  TYPOGRAPHY, 
+  TRANSITIONS 
+} from './theme.constants';
 
-// Create the dark theme based on your existing design
+// Create the dark theme
 const darkTheme = createTheme({
+  spacing: SPACING_UNIT,
   palette: {
     mode: 'dark',
     primary: {
-      main: '#8a85ff', // From your gradient
-      light: '#00b3ff', // From your gradient
-      dark: '#624cac',
+      main: COLORS.primary.main,
+      light: COLORS.primary.light,
+      dark: COLORS.primary.dark,
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#a78bfa', // Lighter Violet for dark mode
-      light: '#c4b5fd',
-      dark: '#8b5cf6',
+      main: COLORS.accent.blue,
+      light: COLORS.accent.green,
+      dark: COLORS.primary.dark,
       contrastText: '#ffffff',
     },
     background: {
-      default: '#0f172a', // Slate 900
-      paper: '#1e293b',  // Slate 800
+      default: COLORS.background.default,
+      paper: COLORS.background.paper,
     },
     text: {
-      primary: '#f9fafb',
-      secondary: '#e5e7eb',
+      primary: COLORS.text.primary,
+      secondary: COLORS.text.secondary,
     },
-    divider: 'rgba(255, 255, 255, 0.08)',
+    divider: COLORS.ui.divider,
   },
   typography: {
-    fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: TYPOGRAPHY.fontFamily,
     h1: {
-      fontWeight: 700,
+      fontWeight: TYPOGRAPHY.fontWeight.bold,
+      fontSize: TYPOGRAPHY.fontSize['5xl'],
+      lineHeight: TYPOGRAPHY.lineHeight.tight,
     },
     h2: {
-      fontWeight: 700,
+      fontWeight: TYPOGRAPHY.fontWeight.bold,
+      fontSize: TYPOGRAPHY.fontSize['4xl'],
     },
     h3: {
-      fontWeight: 600,
+      fontWeight: TYPOGRAPHY.fontWeight.semibold,
+      fontSize: TYPOGRAPHY.fontSize['3xl'],
     },
-    h4: {
-      fontWeight: 600,
-    },
-    h5: {
-      fontWeight: 600,
-    },
-    h6: {
-      fontWeight: 600,
-    },
-    subtitle1: {
-      fontWeight: 500,
-    },
+    // ... other typography variants
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: parseInt(BORDER_RADIUS.md),
   },
+  shadows: [
+    'none',
+    SHADOWS.sm,
+    SHADOWS.sm,
+    SHADOWS.md,
+    SHADOWS.md,
+    SHADOWS.md,
+    SHADOWS.lg,
+    SHADOWS.lg,
+    SHADOWS.lg,
+    SHADOWS.lg,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+    SHADOWS.xl,
+  ],
   components: {
+    // Component customizations using the constants
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgba(15, 23, 42, 0.8)', // Slate 900 with opacity
+          backgroundColor: COLORS.background.elevated,
           backgroundImage: 'none',
           backdropFilter: 'blur(8px)',
+          transition: TRANSITIONS.medium,
         },
       },
     },
@@ -67,45 +98,31 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          fontWeight: 600,
-          borderRadius: 8,
+          fontWeight: TYPOGRAPHY.fontWeight.semibold,
+          borderRadius: BORDER_RADIUS.md,
+          transition: TRANSITIONS.medium,
+        },
+        contained: {
+          boxShadow: SHADOWS.highlight,
+          '&:hover': {
+            boxShadow: SHADOWS.xl,
+            transform: 'translateY(-2px)',
+          },
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          backgroundColor: '#1e293b', // Slate 800
-          border: '1px solid rgba(255, 255, 255, 0.05)',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
+          borderRadius: BORDER_RADIUS.lg,
+          backgroundColor: COLORS.background.paper,
+          border: `1px solid ${COLORS.ui.outline}`,
+          boxShadow: SHADOWS.card,
+          transition: TRANSITIONS.medium,
         },
       },
     },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundImage: 'none',
-        },
-      },
-    },
-    MuiCssBaseline: {
-      styleOverrides: {
-        body: {
-          transition: 'all 0.3s ease',
-          '&::-webkit-scrollbar': {
-            width: '8px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: '4px',
-          },
-          '&::-webkit-scrollbar-track': {
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-          },
-        },
-      },
-    },
+    // ... other component customizations
   },
 });
 

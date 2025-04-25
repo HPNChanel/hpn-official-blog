@@ -18,6 +18,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import StarIcon from "@mui/icons-material/Star";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import BridgeSection from "../components/BridgeSection";
+import ScrollReveal from "../components/ScrollReveal";
 // Optional: animated backgrounds with useEffect
 export default function Home({ recentPosts }) {
   // Used for subtle animation effect on scroll
@@ -89,6 +90,11 @@ export default function Home({ recentPosts }) {
           }}
         >
           <Container maxWidth="lg">
+            <ScrollReveal>
+              <Typography variant="h3" component="h2">
+                Recent Articles
+              </Typography>
+            </ScrollReveal>
             <Grid
               container
               spacing={4}

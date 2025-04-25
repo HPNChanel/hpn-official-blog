@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -13,7 +14,19 @@ import Divider from '@mui/material/Divider';
 // Icons
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LaunchIcon from '@mui/icons-material/Launch';
+import dynamic from 'next/dynamic';
 
+const ProjectChart = dynamic(
+  () => import('../components/ProjectChart'),
+  {
+    loading: () => (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <CircularProgress />
+      </Box>
+    ),
+    ssr: false, // Disable server-side rendering if it's a client-only component
+  }
+);
 export default function Portfolio() {
   // Project data
   const projects = [
@@ -200,6 +213,41 @@ export default function Portfolio() {
             </Grid>
           ))}
         </Grid>
+
+        {/* Add Project Analytics Section */}
+        <Box sx={{ mt: 8, mb: 6 }}>
+          <Typography 
+            variant="h4" 
+            component="h2" 
+            gutterBottom
+            sx={{
+              fontWeight: 600,
+              position: 'relative',
+              display: 'inline-block',
+              mb: 4,
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                width: '60%',
+                height: '4px',
+                bottom: '-8px',
+                left: '20%',
+                backgroundColor: 'primary.main',
+                borderRadius: '2px',
+              }
+            }}
+          >
+            Project Analytics
+          </Typography>
+          
+          <Grid container spacing={4}>
+            {projects.slice(0, 2).map((project, index) => (
+              <Grid item xs={12} md={6} key={`chart-${index}`}>
+                <ProjectChart project={project} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
 
         {/* If you want to add a section for other/smaller projects */}
         <Box sx={{ mt: 8, mb: 4 }}>

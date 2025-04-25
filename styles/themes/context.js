@@ -1,119 +1,83 @@
-import React, { createContext, useState, useEffect, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { ThemeProvider as MUIThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { themes, THEME_NAMES, DEFAULT_THEME } from './index';
+import { darkTheme, lightTheme } from './themes';
 
 // LocalStorage key
-const THEME_STORAGE_KEY = 'theme';
+const THEME_STORAGE_KEY = 'theme-preference';
 
-// Create the theme context
-export const ThemeContext = createContext({
-  themeName: DEFAULT_THEME,
-  theme: themes[DEFAULT_THEME],
-  isLight: false,
+// Create context
+const ThemeContext = createContext({
+  theme: darkTheme,
   isDark: true,
-  setTheme: () => {},
+  isLight: false,
   toggleTheme: () => {},
+  setTheme: () => {},
 });
 
-// Custom hook to use the theme context
+// Hook to use the theme context
 export const useTheme = () => useContext(ThemeContext);
 
 // Theme provider component
 export const ThemeProvider = ({ children }) => {
-  // Use state to store the current theme name
-  const [themeName, setThemeName] = useState(DEFAULT_THEME);
+  // Use state to store the current theme mode
+  const [mode, setMode] = useState('dark');
   
-  // Handle system preference detection and localStorage on component mount
+  // Load theme preference from localStorage on mount
   useEffect(() => {
-    // Function to detect and set initial theme
-    const setInitialTheme = () => {
-      // Check if theme is stored in localStorage
-      const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-      
-      if (storedTheme && Object.values(THEME_NAMES).includes(storedTheme)) {
-        // If valid theme is stored, use it
-        setThemeName(storedTheme);
-      } else {
-        // Otherwise, check system preference
-        const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setThemeName(prefersDarkMode ? THEME_NAMES.DARK : THEME_NAMES.LIGHT);
-      }
-    };
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
     
-    // Set initial theme
-    setInitialTheme();
-    
-    // Add listener for system preference changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = (event) => {
-      // Only update if user hasn't set a preference
-      if (!localStorage.getItem(THEME_STORAGE_KEY)) {
-        setThemeName(event.matches ? THEME_NAMES.DARK : THEME_NAMES.LIGHT);
-      }
-    };
-    
-    // Add event listener with browser compatibility check
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener('change', handleSystemThemeChange);
+    if (savedTheme) {
+      // Use saved preference if available
+      setMode(savedTheme);
     } else {
-      // Older browsers support
-      mediaQuery.addListener(handleSystemThemeChange);
+      // Check system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setMode(prefersDark ? 'dark' : 'light');
     }
-    
-    // Cleanup
-    return () => {
-      if (mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener('change', handleSystemThemeChange);
-      } else {
-        // Older browsers support
-        mediaQuery.removeListener(handleSystemThemeChange);
-      }
-    };
   }, []);
   
   // Update localStorage when theme changes
   useEffect(() => {
-    localStorage.setItem(THEME_STORAGE_KEY, themeName);
+    localStorage.setItem(THEME_STORAGE_KEY, mode);
     
-    // Optional: Update meta theme-color
+    // Update meta theme-color
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.content = 
-        themeName === THEME_NAMES.DARK ? themes.dark.palette.background.default : themes.light.palette.background.default;
+      metaThemeColor.content = mode === 'dark' ? '#0f172a' : '#f9fafb';
     }
-  }, [themeName]);
-  
-  // Function to set theme by name
-  const setTheme = (name) => {
-    if (themes[name]) {
-      setThemeName(name);
-    }
-  };
+    
+    // Add/remove data-theme attribute on document for any CSS that needs it
+    document.documentElement.setAttribute('data-theme', mode);
+  }, [mode]);
   
   // Function to toggle between light and dark
   const toggleTheme = () => {
-    setThemeName(prevTheme => 
-      prevTheme === THEME_NAMES.LIGHT ? THEME_NAMES.DARK : THEME_NAMES.LIGHT
-    );
+    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+  };
+  
+  // Function to set specific theme
+  const setTheme = (newMode) => {
+    if (newMode === 'light' || newMode === 'dark') {
+      setMode(newMode);
+    }
   };
   
   // Get current theme object
-  const theme = themes[themeName];
+  const theme = mode === 'dark' ? darkTheme : lightTheme;
   
-  // Derive boolean flags for convenience
-  const isLight = themeName === THEME_NAMES.LIGHT;
-  const isDark = themeName === THEME_NAMES.DARK;
+  // Boolean flags for convenience
+  const isDark = mode === 'dark';
+  const isLight = mode === 'light';
   
   // Memoize context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({
-    themeName,
     theme,
-    isLight,
     isDark,
-    setTheme,
+    isLight,
     toggleTheme,
-  }), [themeName, theme, isLight, isDark]);
+    setTheme,
+  }), [theme, isDark, isLight]);
   
   return (
     <ThemeContext.Provider value={contextValue}>

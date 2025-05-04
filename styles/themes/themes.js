@@ -105,6 +105,10 @@ export const darkTheme = createTheme({
             backgroundColor: 'rgba(0, 0, 0, 0.1)',
           },
         },
+        // Set default font family throughout the app
+        'html, body': {
+          fontFamily: '"Be Vietnam Pro", system-ui, -apple-system, sans-serif',
+        },
       },
     },
   },
@@ -161,6 +165,10 @@ export const lightTheme = createTheme({
           transition: 'all 0.3s ease',
           backgroundImage: 'radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.05) 0%, transparent 45%), radial-gradient(circle at 70% 80%, rgba(14, 165, 233, 0.03) 0%, transparent 40%)',
           backgroundAttachment: 'fixed',
+        },
+        // Set default font family throughout the app
+        'html, body': {
+          fontFamily: '"Be Vietnam Pro", system-ui, -apple-system, sans-serif',
         },
       },
     },

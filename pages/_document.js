@@ -8,77 +8,102 @@ class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          {/* Preconnect to font domains */}
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com"
-            crossOrigin="anonymous"
-          />
+          {/* Preconnect to critical origins */}
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
           
-          {/* Self-hosted fonts with preload */}
-          <link
-            rel="preload"
-            href="/fonts/poppins-v20-latin-500.woff2"
-            as="font"
-            type="font/woff2"
-            crossOrigin="anonymous"
-          />
+          {/* DNS prefetch for third party services */}
+          <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+          
+          {/* Preload critical fonts */}
           <link
             rel="preload"
-            href="/fonts/poppins-v20-latin-700.woff2" 
-            as="font"
-            type="font/woff2"
-            crossOrigin="anonymous"
+            href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap&subset=vietnamese"
+            as="style"
+          />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap&subset=vietnamese"
+            rel="stylesheet"
+          />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap"
+            rel="stylesheet"
           />
           
-          {/* Modern font-display strategy */}
-          <style dangerouslySetInnerHTML={{
-            __html: `
-              /* Latin */
-              @font-face {
-                font-family: 'Poppins';
-                font-style: normal;
-                font-weight: 500;
-                font-display: swap; /* Show text while loading */
-                src: url('/fonts/poppins-v20-latin-500.woff2') format('woff2');
-                unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-              }
-              @font-face {
-                font-family: 'Poppins';
-                font-style: normal;
-                font-weight: 700;
-                font-display: swap;
-                src: url('/fonts/poppins-v20-latin-700.woff2') format('woff2');
-                unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-              }
-              
-              /* Font fallback strategy to prevent layout shift */
-              html {
-                font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-              }
-            `
-          }} />
+          {/* Theme color for browser UIs */}
+          <meta name="theme-color" content="#a78bfa" />
           
-          {/* Add fallback fonts for better CLS scores */}
-          <style dangerouslySetInnerHTML={{
-            __html: `
-              /* Calculate fallback fonts with similar x-height and width */
-              .font-fallback {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-              }
-              /* Size adjustments to match your custom font */
-              .font-poppins {
-                font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                /* Adjust these values based on your font comparison */
-                font-size-adjust: 0.5;
-                letter-spacing: -0.0125em;
-              }
-            `
-          }} />
+          {/* PWA manifest */}
+          <link rel="manifest" href="/manifest.json" />
           
+          <style jsx global>{`
+            :root {
+              --font-vietnamese: "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
+              --line-height-vietnamese: 1.8;
+              --line-height-vietnamese-heading: 1.4;
+              --letter-spacing-vietnamese: -0.01em;
+              --letter-spacing-vietnamese-heading: -0.015em;
+            }
+            
+            /* Optimize font rendering for Vietnamese */
+            @font-face {
+              font-family: 'Be Vietnam Pro';
+              font-style: normal;
+              font-weight: 400;
+              font-display: swap;
+              src: url(https://fonts.gstatic.com/s/bevietnampro/v10/QdVPSTAyLFyeg_IDWvOJmVES_HRUBX8YYQ.woff2) format('woff2');
+              unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
+            }
+            
+            /* Skip to content focus styles */
+            .skip-to-content {
+              position: absolute;
+              top: -50px;
+              left: 0;
+              padding: 8px 16px;
+              background-color: #a78bfa;
+              color: white;
+              font-weight: 600;
+              z-index: 9999;
+              transition: top 0.3s;
+            }
+            
+            .skip-to-content:focus {
+              top: 0;
+              outline: 2px solid #60a5fa;
+              outline-offset: 2px;
+            }
+            
+            /* Enhanced focus styles for accessibility */
+            :focus-visible {
+              outline: 2px solid #a78bfa;
+              outline-offset: 3px;
+              border-radius: 2px;
+            }
+          `}</style>
+          
+          {/* PWA settings */}
+          <meta name="application-name" content="HPN Blog" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+          <meta name="apple-mobile-web-app-title" content="HPN Blog" />
+          <meta name="format-detection" content="telephone=no" />
+          <meta name="mobile-web-app-capable" content="yes" />
+          
+          {/* Favicons */}
+          <link rel="icon" href="/favicon.ico" />
+          <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+          <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+          <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+          
+          {/* Emotion cache insertion point */}
           {this.props.emotionStyleTags}
         </Head>
         <body>
+          {/* Skip to content link for accessibility */}
+          <a href="#main-content" className="skip-to-content">
+            Skip to content
+          </a>
           <Main />
           <NextScript />
         </body>
@@ -87,18 +112,22 @@ class MyDocument extends Document {
   }
 }
 
-// Implementation of getInitialProps for proper emotion cache handling
+// `getInitialProps` belongs to `_document` (instead of `_app`)
 MyDocument.getInitialProps = async (ctx) => {
   const originalRenderPage = ctx.renderPage;
+  
+  // Create Emotion cache for server-side rendering
   const cache = createEmotionCache();
   const { extractCriticalToChunks } = createEmotionServer(cache);
-
+  
   ctx.renderPage = () =>
     originalRenderPage({
       enhanceApp: (App) => (props) => <App emotionCache={cache} {...props} />,
     });
-
+  
   const initialProps = await Document.getInitialProps(ctx);
+  
+  // This is important. It prevents Emotion from rendering invalid HTML.
   const emotionStyles = extractCriticalToChunks(initialProps.html);
   const emotionStyleTags = emotionStyles.styles.map((style) => (
     <style
@@ -107,7 +136,7 @@ MyDocument.getInitialProps = async (ctx) => {
       dangerouslySetInnerHTML={{ __html: style.css }}
     />
   ));
-
+  
   return {
     ...initialProps,
     emotionStyleTags,

@@ -1,88 +1,76 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider } from '@emotion/react';
-import LinearProgress from '@mui/material/LinearProgress';
-import { ThemeProvider } from '../styles/themes/context';
-import createEmotionCache from '../lib/createEmotionCache';
 import Layout from '../components/Layout';
+import createEmotionCache from '../lib/createEmotionCache';
+import { lightTheme, darkTheme } from '../styles/themes';
+import '../styles/globals.css';
+import { initWebVitals, measureVietnameseRendering } from '../lib/analytics';
 
-// Client-side cache, shared for the whole session
+// Client-side cache, shared for the whole session of the user in the browser
 const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
 
-  // Remove server-side injected CSS on mount
   useEffect(() => {
+    // Remove the server-side injected CSS
     const jssStyles = document.querySelector('#jss-server-side');
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
-  }, []);
-
-  // Add loading indicator for page transitions
-  useEffect(() => {
-    const handleStart = () => setLoading(true);
-    const handleComplete = () => setLoading(false);
-
-    router.events.on('routeChangeStart', handleStart);
-    router.events.on('routeChangeComplete', handleComplete);
-    router.events.on('routeChangeError', handleComplete);
-
-    return () => {
-      router.events.off('routeChangeStart', handleStart);
-      router.events.off('routeChangeComplete', handleComplete);
-      router.events.off('routeChangeError', handleComplete);
-    };
-  }, [router]);
-
-  // Register service worker for PWA capabilities
-  useEffect(() => {
+    
+    // Initialize web vitals
+    initWebVitals();
+    
+    // Measure Vietnamese-specific rendering metrics
+    measureVietnameseRendering();
+    
+    // Register service worker
     if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then(
-          (registration) => {
-            console.log('ServiceWorker registration successful:', registration);
-          },
-          (error) => {
-            console.log('ServiceWorker registration failed:', error);
-          }
-        );
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('SW registered:', registration);
+          })
+          .catch(error => {
+            console.log('SW registration failed:', error);
+          });
       });
     }
   }, []);
 
+  // Determine theme based on system preference
+  const [darkMode, setDarkMode] = React.useState(false);
+  
+  useEffect(() => {
+    // Check for system preference
+    if (typeof window !== 'undefined') {
+      setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      
+      // Listen for changes
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e) => setDarkMode(e.matches);
+      
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+  }, []);
+  
+  const theme = darkMode ? darkTheme : lightTheme;
+
   return (
     <CacheProvider value={emotionCache}>
       <Head>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-        <meta name="theme-color" content="#0f172a" />
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover" />
       </Head>
-      
-      {/* Loading progress indicator */}
-      {loading && (
-        <LinearProgress
-          color="primary"
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: (theme) => theme.zIndex.appBar + 1,
-            height: '3px',
-          }}
-        />
-      )}
-      
-      <ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
         <Layout>
           <Component {...pageProps} />
         </Layout>

@@ -1,13 +1,21 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-vietnamese: "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
+  --line-height-vietnamese: 1.8;
+  --line-height-vietnamese-heading: 1.4;
+  --letter-spacing-vietnamese: -0.01em;
+  --letter-spacing-vietnamese-heading: -0.015em;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme="dark"] {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+}
+
+[data-theme="light"] {
+  --background: #f9fafb;
+  --foreground: #111827;
 }
 
 html,
@@ -19,7 +27,7 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-vietnamese);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -35,8 +43,104 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+/* Ensure smooth theme transitions */
+.theme-transition {
+  transition: all 0.5s ease !important;
+}
+
+/* Vietnamese text optimizations */
+.vietnamese {
+  font-family: var(--font-vietnamese);
+  line-height: var(--line-height-vietnamese);
+  letter-spacing: var(--letter-spacing-vietnamese);
+  hyphens: auto;
+  font-feature-settings: "calt", "liga", "dlig", "cv01";
+  text-rendering: optimizeLegibility;
+}
+
+.vietnamese-heading {
+  font-family: var(--font-vietnamese);
+  line-height: var(--line-height-vietnamese-heading);
+  letter-spacing: var(--letter-spacing-vietnamese-heading);
+  hyphens: auto;
+  font-feature-settings: "calt", "liga", "dlig", "cv01";
+  text-rendering: optimizeLegibility;
+}
+
+/* Vietnamese content specific optimizations */
+[lang="vi"] {
+  font-family: var(--font-vietnamese);
+  line-height: var(--line-height-vietnamese);
+  letter-spacing: var(--letter-spacing-vietnamese);
+  font-feature-settings: "calt", "liga", "dlig", "cv01";
+  text-rendering: optimizeLegibility;
+}
+
+/* Vietnamese static content - prevent layout shifts */
+.vietnamese-content h1,
+.vietnamese-content h2,
+.vietnamese-content h3,
+.vietnamese-content h4,
+.vietnamese-content h5,
+.vietnamese-content h6 {
+  font-family: var(--font-vietnamese);
+  line-height: var(--line-height-vietnamese-heading);
+  letter-spacing: var(--letter-spacing-vietnamese-heading);
+  font-feature-settings: "calt", "liga", "dlig", "cv01";
+  text-rendering: optimizeLegibility;
+  hyphens: auto;
+}
+
+.vietnamese-content p,
+.vietnamese-content li,
+.vietnamese-content blockquote {
+  font-family: var(--font-vietnamese);
+  line-height: var(--line-height-vietnamese);
+  letter-spacing: var(--letter-spacing-vietnamese);
+  font-feature-settings: "calt", "liga", "dlig", "cv01";
+  text-rendering: optimizeLegibility;
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* Addition for vertical rhythm */
+.vietnamese-content * + * {
+  margin-top: 1.5rem;
+}
+
+.vietnamese-content * + h2 {
+  margin-top: 2.5rem;
+}
+
+.vietnamese-content * + h3 {
+  margin-top: 2rem;
+}
+
+/* Vietnamese virtualized list items - prevent layout issues */
+[data-virtualized-item][lang="vi"] {
+  padding-bottom: 4px; /* Extra space for diacritical marks */
+}
+
+/* Prevent FOUT (Flash of Unstyled Text) */
+@font-face {
+  font-display: swap;
+}
+
+/* Ensure text remains readable during transitions */
+body, h1, h2, h3, h4, h5, h6, p, span, a {
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Enhanced scrollbar for long Vietnamese content */
+.vietnamese-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.vietnamese-content::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.vietnamese-content::-webkit-scrollbar-thumb {
+  background-color: rgba(167, 139, 250, 0.3);
+  border-radius: 4px;
 }

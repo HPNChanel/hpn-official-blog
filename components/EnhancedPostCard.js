@@ -7,27 +7,60 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { slugifyTag } from '../lib/posts';
+import { Button, IconButton, Tooltip } from '@mui/material';
 
 // Using Framer Motion with MUI
 const MotionCard = motion(Card);
+const MotionBox = motion(Box);
+const MotionChip = motion(Chip);
 
-const EnhancedPostCard = memo(function EnhancedPostCard({ id, title, date, excerpt, tags = [] }) {
+const EnhancedPostCard = memo(function EnhancedPostCard({ 
+  id, 
+  title, 
+  date, 
+  excerpt, 
+  tags = [],
+  onSavePost, 
+  isSaved = false,
+  category
+}) {
+  // Animation variants
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.4 }
+    },
+    hover: {
+      y: -10,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 20
+      }
+    }
+  };
+  
+  const chipVariants = {
+    hover: { scale: 1.05, transition: { duration: 0.2 } }
+  };
+  
   return (
     <Link href={`/posts/${id}`} passHref legacyBehavior>
       <CardActionArea component="a" sx={{ height: '100%' }}>
         <MotionCard
           elevation={4}
-          whileHover={{ 
-            y: -10,
-            boxShadow: "0 15px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(167, 139, 250, 0.2)"
-          }}
-          transition={{ 
-            type: "spring", 
-            stiffness: 300, 
-            damping: 20 
-          }}
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          whileHover="hover"
           sx={{
             height: '100%',
             display: 'flex',
@@ -49,24 +82,122 @@ const EnhancedPostCard = memo(function EnhancedPostCard({ id, title, date, excer
             },
           }}
         >
-          <CardContent sx={{ p: 3, flexGrow: 1 }}>
+          {/* Background gradient animation */}
+          <MotionBox
+            initial={{ opacity: 0.3 }}
+            whileHover={{ opacity: 0.7 }}
+            transition={{ duration: 0.3 }}
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'radial-gradient(circle at top right, rgba(167, 139, 250, 0.15), transparent 70%)',
+              zIndex: 0,
+            }}
+          />
+
+          <CardContent
+            sx={{
+              p: 3,
+              position: 'relative',
+              zIndex: 1,
+              flexGrow: 1,
+            }}
+          >
+            {/* Save/Bookmark button */}
+            <Tooltip title={isSaved ? "Remove from saved" : "Save for later"}>
+              <IconButton
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (onSavePost) onSavePost(id);
+                }}
+                size="small"
+                sx={{
+                  position: 'absolute',
+                  top: 12,
+                  right: 12,
+                  color: isSaved ? 'primary.main' : 'text.secondary',
+                  '&:hover': {
+                    color: isSaved ? 'primary.light' : 'primary.main',
+                    transform: 'scale(1.1)',
+                  },
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+              </IconButton>
+            </Tooltip>
+            
+            {/* Category badge */}
+            {category && (
+              <Box
+                component={motion.div}
+                whileHover={{ y: -2 }}
+                sx={{
+                  position: 'absolute',
+                  top: 12,
+                  left: 12,
+                  bgcolor: 'rgba(167, 139, 250, 0.15)',
+                  color: 'primary.main',
+                  fontSize: '0.7rem',
+                  py: 0.5,
+                  px: 1.5,
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  letterSpacing: '0.5px',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {category}
+              </Box>
+            )}
+
             {/* Tags */}
-            <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-              {tags.map((tag) => (
-                <Chip
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 1,
+                mb: 2,
+                flexWrap: 'wrap',
+                mt: category ? 5 : 2,
+              }}
+            >
+              {tags.slice(0, 3).map((tag) => (
+                <MotionChip
                   key={tag}
                   label={tag}
                   size="small"
-                  component={motion.div}
-                  whileHover={{ scale: 1.05 }}
+                  variants={chipVariants}
+                  whileHover="hover"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.location.href = `/tags/${slugifyTag(tag)}`;
+                  }}
                   sx={{
                     backgroundColor: 'rgba(167, 139, 250, 0.15)',
                     color: '#a78bfa',
                     borderRadius: '6px',
                     fontSize: '0.7rem',
+                    cursor: 'pointer',
                   }}
                 />
               ))}
+              {tags.length > 3 && (
+                <Chip
+                  label={`+${tags.length - 3}`}
+                  size="small"
+                  sx={{
+                    backgroundColor: 'rgba(167, 139, 250, 0.05)',
+                    color: '#a78bfa',
+                    borderRadius: '6px',
+                    fontSize: '0.7rem',
+                  }}
+                />
+              )}
             </Box>
 
             <Typography
@@ -104,23 +235,24 @@ const EnhancedPostCard = memo(function EnhancedPostCard({ id, title, date, excer
               {excerpt}
             </Typography>
 
-            {/* Date */}
-            <Box 
-              component={motion.div}
-              initial={{ opacity: 0.8 }}
-              whileHover={{ opacity: 1 }}
+            <Divider sx={{ my: 2 }} />
+
+            <Box
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                mt: 'auto',
               }}
             >
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ fontSize: '0.8rem' }}
+              >
                 {format(new Date(date), 'MMMM d, yyyy')}
               </Typography>
-              
-              <motion.div
+
+              <MotionBox
                 whileHover={{ x: 5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
@@ -135,7 +267,7 @@ const EnhancedPostCard = memo(function EnhancedPostCard({ id, title, date, excer
                 >
                   Read More →
                 </Typography>
-              </motion.div>
+              </MotionBox>
             </Box>
           </CardContent>
         </MotionCard>
